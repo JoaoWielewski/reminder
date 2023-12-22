@@ -1,0 +1,7 @@
+get-doctor:
+  handler: ./src/app/lambdas/doctor/get-doctor.handler
+  events:
+    - httpApi:
+        path: /doctor/{id}
+        method: get
+
