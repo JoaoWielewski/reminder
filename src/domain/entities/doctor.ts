@@ -12,6 +12,7 @@ export type DoctorDomain = {
   remainingReminders: number
   isActive: boolean
   schedulePhone: string
+  password: string
   createdAt: Date
   updatedAt?: Date
 }
@@ -28,6 +29,7 @@ export class Doctor implements DoctorDomain {
   remainingReminders: number
   isActive: boolean
   schedulePhone: string
+  password: string
   createdAt: Date
   updatedAt?: Date
 

@@ -16,6 +16,7 @@ export const doctorMapper = (): EntityMapper<Doctor> => {
         remainingReminders: doctor.remaining_reminders,
         isActive: doctor.is_active,
         schedulePhone: doctor.schedule_phone,
+        password: doctor.password,
         createdAt: doctor.created_at,
         updatedAt: doctor.updated_at
       })

@@ -5,3 +5,10 @@ get-doctor:
         path: /doctor/{id}
         method: get
 
+create-doctor:
+  handler: ./src/app/lambdas/doctor/create-doctor.handler
+  events:
+    - httpApi:
+        path: /doctor
+        method: post
+
