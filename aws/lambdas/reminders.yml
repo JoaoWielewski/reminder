@@ -11,3 +11,10 @@ get-reminders:
     - httpApi:
         path: /reminders/{doctorId}
         method: get
+
+delete-reminder:
+  handler: ./src/app/lambdas/reminder/delete-reminder.handler
+  events:
+    - httpApi:
+        path: /reminder/{id}
+        method: delete

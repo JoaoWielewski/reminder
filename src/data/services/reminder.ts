@@ -4,11 +4,13 @@ import { GenerateIdPort } from '../../ports/crypto/generate-id'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
 import { ReminderRepositoryPort } from '../../ports/repositories/reminder-repository'
 import { CreateReminderCase } from '../../ports/usecases/reminder/create-reminder'
+import { DeleteReminderCase } from '../../ports/usecases/reminder/delete-reminder'
 import { GetRemindersCase } from '../../ports/usecases/reminder/get-reminders'
 import { OutOfRemindersError } from '../errors/out-of-reminders'
 
 export type ReminderContracts = CreateReminderCase.Contract &
-  GetRemindersCase.Contract
+  GetRemindersCase.Contract &
+  DeleteReminderCase.Contract
 
 export class ReminderService implements ReminderContracts {
   constructor(
@@ -82,5 +84,9 @@ export class ReminderService implements ReminderContracts {
     doctorId
   }: GetRemindersCase.Input): Promise<GetRemindersCase.Output> {
     return await this.reminderRepository.find(doctorId)
+  }
+
+  async delete({ id }: DeleteReminderCase.Input): Promise<void> {
+    await this.reminderRepository.delete(id)
   }
 }

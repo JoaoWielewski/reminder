@@ -51,4 +51,8 @@ export class ReminderRepositoryAdapter
 
     return reminderMapper().toArrayOfEntities(reminders)
   }
+
+  async delete(id: string): Promise<void> {
+    await DbConnection.getInstace()('reminder').delete().where('id', id)
+  }
 }
