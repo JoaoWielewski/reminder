@@ -1,5 +1,5 @@
 org: reminder
-service: api
+service: reminder-api
 frameworkVersion: "3"
 
 plugins:
@@ -22,3 +22,4 @@ provider:
 
 functions:
   - ${file(aws/lambdas/doctors.yml)}
+  - ${file(aws/lambdas/reminders.yml)}

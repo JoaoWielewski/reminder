@@ -1,6 +1,7 @@
 import { Doctor } from '../../domain/entities/doctor'
 import { DbConnection } from '../../infra/db/knex'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
+import { UpdateDoctorDto } from '../../ports/repositories/dtos/doctor/update-doctor'
 import { doctorMapper } from './mappers/doctor'
 
 export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
@@ -43,5 +44,11 @@ export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
       password,
       created_at: createdAt
     })
+  }
+
+  async update({ id, ...fieldsToUpdate }: UpdateDoctorDto): Promise<void> {
+    await DbConnection.getInstace()('doctor')
+      .where('id', id)
+      .update({ ...fieldsToUpdate, updated_at: new Date() })
   }
 }

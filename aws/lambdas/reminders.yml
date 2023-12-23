@@ -1,0 +1,6 @@
+create-reminder:
+  handler: ./src/app/lambdas/reminder/create-reminder.handler
+  events:
+    - httpApi:
+        path: /reminder
+        method: post
