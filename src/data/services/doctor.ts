@@ -5,8 +5,11 @@ import { GenerateIdPort } from '../../ports/crypto/generate-id'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
 import { CreateDoctorCase } from '../../ports/usecases/doctor/create-doctor'
 import { GetDoctorCase } from '../../ports/usecases/doctor/get-doctor'
+import { UpdateDoctorCase } from '../../ports/usecases/doctor/update-doctor'
 
-export type DoctorContracts = GetDoctorCase.Contract & CreateDoctorCase.Contract
+export type DoctorContracts = GetDoctorCase.Contract &
+  CreateDoctorCase.Contract &
+  UpdateDoctorCase.Contract
 
 export class DoctorService implements DoctorContracts {
   constructor(
@@ -47,5 +50,23 @@ export class DoctorService implements DoctorContracts {
     await this.doctorRepository.create(doctor)
 
     return doctor
+  }
+
+  async update({
+    id,
+    phone,
+    specialty,
+    daysToSchedule,
+    email,
+    schedulePhone
+  }: UpdateDoctorCase.Input): Promise<void> {
+    await this.doctorRepository.update({
+      id,
+      phone,
+      specialty,
+      days_to_schedule: daysToSchedule,
+      email,
+      schedule_phone: schedulePhone
+    })
   }
 }
