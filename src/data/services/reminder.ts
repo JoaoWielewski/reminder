@@ -33,10 +33,11 @@ export class ReminderService implements ReminderContracts {
       throw new OutOfRemindersError(doctorId)
     }
 
-    await this.reminderRepository.deleteActiveReminders({
-      doctorId,
-      pacientPhone
-    })
+    const deletedActiveReminders =
+      await this.reminderRepository.deleteActiveReminders({
+        doctorId,
+        pacientPhone
+      })
 
     const expectedReturnDate = new Date()
 
@@ -72,9 +73,14 @@ export class ReminderService implements ReminderContracts {
 
     await this.reminderRepository.create(reminder)
 
+    let newRemainingReminders = currentRemainingReminders - 1
+    if (deletedActiveReminders > 0) {
+      newRemainingReminders += 1
+    }
+
     await this.doctorRepository.update({
       id: doctorId,
-      remaining_reminders: currentRemainingReminders - 1
+      remaining_reminders: newRemainingReminders
     })
 
     return reminder

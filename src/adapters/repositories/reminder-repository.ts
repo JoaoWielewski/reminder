@@ -35,12 +35,14 @@ export class ReminderRepositoryAdapter
   async deleteActiveReminders({
     doctorId,
     pacientPhone
-  }: DeleteActiveRemindersDto): Promise<void> {
-    await DbConnection.getInstace()('reminder').delete().where({
+  }: DeleteActiveRemindersDto): Promise<number> {
+    const result = await DbConnection.getInstace()('reminder').delete().where({
       doctor_id: doctorId,
       pacient_phone: pacientPhone,
       status: REMINDER_STATUS.WAITING
     })
+
+    return result
   }
 
   async find(doctorId: string): Promise<Reminder[]> {
