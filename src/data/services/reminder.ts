@@ -86,7 +86,15 @@ export class ReminderService implements ReminderContracts {
     return await this.reminderRepository.find(doctorId)
   }
 
-  async delete({ id }: DeleteReminderCase.Input): Promise<void> {
+  async delete({ id, doctorId }: DeleteReminderCase.Input): Promise<void> {
+    const doctor = await this.doctorRepository.findOne(doctorId)
+    const currentRemainingReminders = doctor.remainingReminders
+
+    await this.doctorRepository.update({
+      id: doctorId,
+      remaining_reminders: currentRemainingReminders + 1
+    })
+
     await this.reminderRepository.delete(id)
   }
 }

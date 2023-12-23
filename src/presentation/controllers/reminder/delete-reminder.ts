@@ -14,7 +14,7 @@ export class DeleteReminderController implements Controller {
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ['id']
+      const requiredFields = ['id', 'doctorId']
 
       for (const field of requiredFields) {
         if (!httpRequest.body[field]) {
@@ -22,13 +22,17 @@ export class DeleteReminderController implements Controller {
         }
       }
 
-      const { id } = httpRequest.body
+      const { id, doctorId } = httpRequest.body
 
       if (!this.isStringValidator.validate(id)) {
         return badRequest(new InvalidParamError('id'))
       }
 
-      await this.reminderService.delete({ id })
+      if (!this.isStringValidator.validate(doctorId)) {
+        return badRequest(new InvalidParamError('doctorId'))
+      }
+
+      await this.reminderService.delete({ doctorId, id })
 
       return noContent()
     } catch (error) {
