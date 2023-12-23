@@ -1,0 +1,12 @@
+import { IsArrayEmptyValidatorAdapter } from '../../../../adapters/validators/is-array-empty'
+import { IsStringValidatorAdapter } from '../../../../adapters/validators/is-string'
+import { GetRemindersController } from '../../../../presentation/controllers/reminder/get-reminders'
+import { makeReminderService } from '../../services/reminder'
+
+export const makeGetRemindersController = (): GetRemindersController => {
+  return new GetRemindersController(
+    makeReminderService(),
+    new IsStringValidatorAdapter(),
+    new IsArrayEmptyValidatorAdapter()
+  )
+}

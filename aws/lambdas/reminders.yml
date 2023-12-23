@@ -4,3 +4,10 @@ create-reminder:
     - httpApi:
         path: /reminder
         method: post
+
+get-reminders:
+  handler: ./src/app/lambdas/reminder/get-reminders.handler
+  events:
+    - httpApi:
+        path: /reminders/{doctorId}
+        method: get

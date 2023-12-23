@@ -4,9 +4,11 @@ import { GenerateIdPort } from '../../ports/crypto/generate-id'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
 import { ReminderRepositoryPort } from '../../ports/repositories/reminder-repository'
 import { CreateReminderCase } from '../../ports/usecases/reminder/create-reminder'
+import { GetRemindersCase } from '../../ports/usecases/reminder/get-reminders'
 import { OutOfRemindersError } from '../errors/out-of-reminders'
 
-export type ReminderContracts = CreateReminderCase.Contract
+export type ReminderContracts = CreateReminderCase.Contract &
+  GetRemindersCase.Contract
 
 export class ReminderService implements ReminderContracts {
   constructor(
@@ -74,5 +76,11 @@ export class ReminderService implements ReminderContracts {
     })
 
     return reminder
+  }
+
+  async findMany({
+    doctorId
+  }: GetRemindersCase.Input): Promise<GetRemindersCase.Output> {
+    return await this.reminderRepository.find(doctorId)
   }
 }

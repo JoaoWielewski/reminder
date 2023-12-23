@@ -5,5 +5,6 @@ export namespace ReminderRepositoryPort {
   export interface Contracts {
     create(input: Reminder): Promise<void>
     deleteActiveReminders(input: DeleteActiveRemindersDto): Promise<void>
+    find(doctorId: string): Promise<Reminder[]>
   }
 }

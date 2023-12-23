@@ -3,6 +3,7 @@ import { Reminder } from '../../domain/entities/reminder'
 import { DbConnection } from '../../infra/db/knex'
 import { DeleteActiveRemindersDto } from '../../ports/repositories/dtos/reminder/delete-active-reminders'
 import { ReminderRepositoryPort } from '../../ports/repositories/reminder-repository'
+import { reminderMapper } from './mappers/reminder'
 
 export class ReminderRepositoryAdapter
   implements ReminderRepositoryPort.Contracts
@@ -40,5 +41,14 @@ export class ReminderRepositoryAdapter
       pacient_phone: pacientPhone,
       status: REMINDER_STATUS.WAITING
     })
+  }
+
+  async find(doctorId: string): Promise<Reminder[]> {
+    const reminders = await DbConnection.getInstace()
+      .select('*')
+      .from('reminder')
+      .where('doctor_id', doctorId)
+
+    return reminderMapper().toArrayOfEntities(reminders)
   }
 }
