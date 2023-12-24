@@ -1,4 +1,4 @@
 export enum REMINDER_STATUS {
-  WAITING = 'waiting',
+  ACTIVE = 'active',
   MESSAGE_SENT = 'message_sent'
 }

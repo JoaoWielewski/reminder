@@ -39,7 +39,7 @@ export class ReminderRepositoryAdapter
     const result = await DbConnection.getInstace()('reminder').delete().where({
       doctor_id: doctorId,
       pacient_phone: pacientPhone,
-      status: REMINDER_STATUS.WAITING
+      status: REMINDER_STATUS.ACTIVE
     })
 
     return result
@@ -56,5 +56,20 @@ export class ReminderRepositoryAdapter
 
   async delete(id: string): Promise<void> {
     await DbConnection.getInstace()('reminder').delete().where('id', id)
+  }
+
+  async findActiveReminders(): Promise<Reminder[]> {
+    const reminders = await DbConnection.getInstace()
+      .select('*')
+      .from('reminder')
+      .where('status', REMINDER_STATUS.ACTIVE)
+
+    return reminderMapper().toArrayOfEntities(reminders)
+  }
+
+  async setToSent(id: string): Promise<void> {
+    await DbConnection.getInstace()('reminder')
+      .where('id', id)
+      .update({ status: REMINDER_STATUS.MESSAGE_SENT })
   }
 }

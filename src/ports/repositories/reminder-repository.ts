@@ -7,5 +7,7 @@ export namespace ReminderRepositoryPort {
     deleteActiveReminders(input: DeleteActiveRemindersDto): Promise<number>
     find(doctorId: string): Promise<Reminder[]>
     delete(id: string): Promise<void>
+    findActiveReminders(): Promise<Reminder[]>
+    setToSent(id: string): Promise<void>
   }
 }

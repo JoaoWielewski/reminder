@@ -1,0 +1,13 @@
+iam-SQSRolePolicies:
+  Effect: Allow
+  Action:
+    - sqs:*
+  Resource:
+    - "*"
+
+iam-SecretManagerRolePolicies:
+  Effect: Allow
+  Action:
+    - secretsmanager:GetSecretValue
+  Resource:
+    - "*"

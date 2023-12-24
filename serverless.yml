@@ -8,6 +8,9 @@ plugins:
 
 useDotenv: true
 
+custom:
+  secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
+
 provider:
   name: aws
   runtime: nodejs18.x
@@ -16,10 +19,23 @@ provider:
   httpApi:
     cors: true
   environment:
-    DB_URL: ${env:DB_URL}
+    DB_URL: ${self:custom.secrets.DB_URL, env:DB_URL}
+    REGION: ${self:custom.secrets.REGION, env:REGION}
+    WHATSAPP_ENDPOINT: ${self:custom.secrets.WHATSAPP_ENDPOINT, env:WHATSAPP_ENDPOINT}
+    WHATSAPP_TOKEN: ${self:custom.secrets.WHATSAPP_TOKEN, env:WHATSAPP_TOKEN}
 
+  iam:
+    role:
+      statements:
+        - ${file(aws/iam.yml):iam-SecretManagerRolePolicies}
+        - ${file(aws/iam.yml):iam-SQSRolePolicies}
 
 
 functions:
   - ${file(aws/lambdas/doctors.yml)}
   - ${file(aws/lambdas/reminders.yml)}
+  - ${file(aws/lambdas/schedulers.yml)}
+  - ${file(aws/sqs-workers/message-worker.yml)}
+
+resources:
+  - ${file(aws/resources/sqsQueue.yml)}

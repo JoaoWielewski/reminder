@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt'
 import { Doctor } from '../../domain/entities/doctor'
 import { PRONOUN } from '../../domain/entities/enums/pronoun'
 import { GenerateIdPort } from '../../ports/crypto/generate-id'
@@ -40,7 +39,7 @@ export class DoctorService implements DoctorContracts {
       pronoun: pronoun as PRONOUN,
       daysToSchedule,
       schedulePhone,
-      password: await bcrypt.hash(password, 10),
+      password,
       isActive: false,
       monthlyReminders: 0,
       remainingReminders: 0,

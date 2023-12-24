@@ -1,22 +1,28 @@
 import { REMINDER_STATUS } from '../../domain/entities/enums/status'
 import { Reminder } from '../../domain/entities/reminder'
 import { GenerateIdPort } from '../../ports/crypto/generate-id'
+import { SQSProviderPort } from '../../ports/providers/sqs'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
 import { ReminderRepositoryPort } from '../../ports/repositories/reminder-repository'
 import { CreateReminderCase } from '../../ports/usecases/reminder/create-reminder'
 import { DeleteReminderCase } from '../../ports/usecases/reminder/delete-reminder'
 import { GetRemindersCase } from '../../ports/usecases/reminder/get-reminders'
+import { ProcessRemindersCase } from '../../ports/usecases/reminder/process-reminders'
+import { PeriodFormatterContract } from '../../ports/utils/period-formatter'
 import { OutOfRemindersError } from '../errors/out-of-reminders'
 
 export type ReminderContracts = CreateReminderCase.Contract &
   GetRemindersCase.Contract &
-  DeleteReminderCase.Contract
+  DeleteReminderCase.Contract &
+  ProcessRemindersCase.Contract
 
 export class ReminderService implements ReminderContracts {
   constructor(
     private readonly reminderRepository: ReminderRepositoryPort.Contracts,
     private readonly doctorRepository: DoctorRepositoryPort.Contracts,
-    private readonly generateId: GenerateIdPort
+    private readonly generateId: GenerateIdPort,
+    private readonly sqsProvider: SQSProviderPort,
+    private readonly periodFormatter: PeriodFormatterContract
   ) {}
 
   async create({
@@ -67,7 +73,7 @@ export class ReminderService implements ReminderContracts {
       periodType,
       periodQuantity,
       expectedReturnDate,
-      status: REMINDER_STATUS.WAITING,
+      status: REMINDER_STATUS.ACTIVE,
       createdAt: new Date()
     })
 
@@ -102,5 +108,50 @@ export class ReminderService implements ReminderContracts {
     })
 
     await this.reminderRepository.delete(id)
+  }
+
+  async process(): Promise<void> {
+    const currentDate = new Date()
+    const activeReminders = await this.reminderRepository.findActiveReminders()
+
+    for (const reminder of activeReminders) {
+      const doctor = await this.doctorRepository.findOne(reminder.doctorId)
+      const expectedReturnDateString = reminder.expectedReturnDate
+      const expectedReturnDate = new Date(expectedReturnDateString)
+      expectedReturnDate.setDate(
+        expectedReturnDate.getDate() - doctor.daysToSchedule
+      )
+
+      if (currentDate > expectedReturnDate) {
+        const expectedReturnDate = new Date(expectedReturnDateString)
+        const formattedReturnDate = expectedReturnDate.toLocaleDateString(
+          'pt-BR',
+          {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }
+        )
+
+        await this.sqsProvider.sendMessageToQueue(
+          JSON.stringify({
+            reminderId: reminder.id,
+            pacientName: reminder.pacientName,
+            doctorName: doctor.name,
+            daysToSchedule: doctor.daysToSchedule,
+            specialty: doctor.specialty,
+            date: formattedReturnDate,
+            period: await this.periodFormatter.format(
+              reminder.periodType,
+              reminder.periodQuantity
+            ),
+            pacientPhone: reminder.pacientPhone,
+            schedulePhone: doctor.schedulePhone,
+            pronoun: doctor.pronoun
+          }),
+          'messageQueue'
+        )
+      }
+    }
   }
 }

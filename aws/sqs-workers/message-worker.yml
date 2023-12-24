@@ -1,0 +1,10 @@
+messageWorker:
+  handler: src/app/lambdas/workers/message.handler
+  timeout: 90
+  events:
+    - sqs:
+        arn:
+          Fn::GetAtt:
+            - messageQueue
+            - Arn
+        batchSize: 1

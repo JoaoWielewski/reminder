@@ -8,13 +8,14 @@
     "start": "sls offline"
   },
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "aws-sdk": "^2.1525.0",
+    "axios": "^1.6.2",
     "knex": "^3.1.0",
     "pg": "^8.11.3",
     "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
+    "@types/aws-sdk": "^2.7.0",
     "@types/validator": "^13.11.7",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "eslint": "^8.56.0",

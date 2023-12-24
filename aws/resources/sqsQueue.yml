@@ -1,0 +1,14 @@
+Resources:
+  messageQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: messageQueue
+      VisibilityTimeout: 300
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt messageDeadLetterQueue.Arn
+        maxReceiveCount: 3
+
+  messageDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: messageDeadLetterQueue
