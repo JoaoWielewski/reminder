@@ -8,7 +8,9 @@ import { CreateReminderCase } from '../../ports/usecases/reminder/create-reminde
 import { DeleteReminderCase } from '../../ports/usecases/reminder/delete-reminder'
 import { GetRemindersCase } from '../../ports/usecases/reminder/get-reminders'
 import { ProcessRemindersCase } from '../../ports/usecases/reminder/process-reminders'
+import { IsBusinessDayValidatorContract } from '../../ports/utils/is-business-day'
 import { PeriodFormatterContract } from '../../ports/utils/period-formatter'
+import { NotBusinessDayError } from '../errors/not-business-day'
 import { OutOfRemindersError } from '../errors/out-of-reminders'
 
 export type ReminderContracts = CreateReminderCase.Contract &
@@ -22,7 +24,8 @@ export class ReminderService implements ReminderContracts {
     private readonly doctorRepository: DoctorRepositoryPort.Contracts,
     private readonly generateId: GenerateIdPort,
     private readonly sqsProvider: SQSProviderPort,
-    private readonly periodFormatter: PeriodFormatterContract
+    private readonly periodFormatter: PeriodFormatterContract,
+    private readonly isBusinessDayValidator: IsBusinessDayValidatorContract
   ) {}
 
   async create({
@@ -112,6 +115,13 @@ export class ReminderService implements ReminderContracts {
 
   async process(): Promise<void> {
     const currentDate = new Date()
+    const isBusinessDay =
+      await this.isBusinessDayValidator.validate(currentDate)
+
+    if (!isBusinessDay) {
+      throw new NotBusinessDayError()
+    }
+
     const activeReminders = await this.reminderRepository.findActiveReminders()
 
     for (const reminder of activeReminders) {
@@ -124,6 +134,13 @@ export class ReminderService implements ReminderContracts {
 
       if (currentDate > expectedReturnDate) {
         const expectedReturnDate = new Date(expectedReturnDateString)
+
+        while (
+          !(await this.isBusinessDayValidator.validate(expectedReturnDate))
+        ) {
+          expectedReturnDate.setDate(expectedReturnDate.getDate() + 1)
+        }
+
         const formattedReturnDate = expectedReturnDate.toLocaleDateString(
           'pt-BR',
           {
