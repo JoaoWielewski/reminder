@@ -8,8 +8,8 @@ plugins:
 
 useDotenv: true
 
-custom:
-  secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
+#custom:
+#  secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
 
 provider:
   name: aws

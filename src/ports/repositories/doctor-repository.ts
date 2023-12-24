@@ -6,5 +6,6 @@ export namespace DoctorRepositoryPort {
     findOne(id: string): Promise<Doctor>
     create(input: Doctor): Promise<void>
     update(input: UpdateDoctorDto): Promise<void>
+    resetReminders(): Promise<void>
   }
 }

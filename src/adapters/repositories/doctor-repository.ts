@@ -51,4 +51,11 @@ export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
       .where('id', id)
       .update({ ...fieldsToUpdate, updated_at: new Date() })
   }
+
+  async resetReminders(): Promise<void> {
+    await DbConnection.getInstace()('doctor').update(
+      'remaining_reminders',
+      DbConnection.getInstace().raw('monthly_reminders')
+    )
+  }
 }

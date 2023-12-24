@@ -5,7 +5,7 @@ export namespace GetDoctorCase {
     id: string
   }
 
-  export type Output = Doctor
+  export type Output = voi
 
   export interface Contract {
     findOne: (input: Input) => Promise<Output>
