@@ -15,5 +15,5 @@ reset-reminders:
   handler: ./src/app/lambdas/schedulers/reset-reminders.handler
   timeout: 30
   events:
-    - schedule: cron(1 0 1 * ?)
+    - schedule: cron(1 0 1 * ? *)
 
