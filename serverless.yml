@@ -8,8 +8,8 @@ plugins:
 
 useDotenv: true
 
-custom:
-  secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
+# custom:
+#   secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
 
 provider:
   name: aws
@@ -23,6 +23,7 @@ provider:
     REGION: ${self:custom.secrets.REGION, env:REGION}
     WHATSAPP_ENDPOINT: ${self:custom.secrets.WHATSAPP_ENDPOINT, env:WHATSAPP_ENDPOINT}
     WHATSAPP_TOKEN: ${self:custom.secrets.WHATSAPP_TOKEN, env:WHATSAPP_TOKEN}
+    ACCESS_TOKEN_SECRET: ${self:custom.secrets.ACCESS_TOKEN_SECRET, env:ACCESS_TOKEN_SECRET}
 
   iam:
     role:

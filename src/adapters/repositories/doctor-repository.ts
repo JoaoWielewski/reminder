@@ -58,4 +58,13 @@ export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
       DbConnection.getInstace().raw('monthly_reminders')
     )
   }
+
+  async findOneByEmail(email: string): Promise<Doctor> {
+    const doctor = await DbConnection.getInstace()
+      .select('*')
+      .from('doctor')
+      .where('email', email)
+      .first()
+    return doctorMapper().toEntity(doctor)
+  }
 }

@@ -2,7 +2,7 @@ get-doctor:
   handler: ./src/app/lambdas/doctor/get-doctor.handler
   events:
     - httpApi:
-        path: /doctor/{id}
+        path: /doctor
         method: get
 
 create-doctor:
@@ -16,6 +16,12 @@ update-doctor:
   handler: ./src/app/lambdas/doctor/update-doctor.handler
   events:
     - httpApi:
-        path: /doctor/{id}
+        path: /doctor
         method: put
 
+login:
+  handler: ./src/app/lambdas/doctor/login.handler
+  events:
+    - httpApi:
+        path: /login
+        method: post

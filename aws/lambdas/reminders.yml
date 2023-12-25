@@ -9,7 +9,7 @@ get-reminders:
   handler: ./src/app/lambdas/reminder/get-reminders.handler
   events:
     - httpApi:
-        path: /reminders/{doctorId}
+        path: /reminders
         method: get
 
 delete-reminder:

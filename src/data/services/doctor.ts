@@ -1,17 +1,23 @@
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { Environment } from '../../app/env'
 import { Doctor } from '../../domain/entities/doctor'
 import { PRONOUN } from '../../domain/entities/enums/pronoun'
 import { GenerateIdPort } from '../../ports/crypto/generate-id'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
 import { CreateDoctorCase } from '../../ports/usecases/doctor/create-doctor'
 import { GetDoctorCase } from '../../ports/usecases/doctor/get-doctor'
+import { LoginCase } from '../../ports/usecases/doctor/login'
 import { ResetRemindersCase } from '../../ports/usecases/doctor/reset-reminders'
 import { UpdateDoctorCase } from '../../ports/usecases/doctor/update-doctor'
+import { NotFoundError } from '../errors/not-found'
+import { WrongPasswordError } from '../errors/wrong-password'
 
 export type DoctorContracts = GetDoctorCase.Contract &
   CreateDoctorCase.Contract &
   UpdateDoctorCase.Contract &
-  ResetRemindersCase.Contract
+  ResetRemindersCase.Contract &
+  LoginCase.Contract
 
 export class DoctorService implements DoctorContracts {
   constructor(
@@ -74,5 +80,32 @@ export class DoctorService implements DoctorContracts {
 
   async resetReminders(): Promise<void> {
     await this.doctorRepository.resetReminders()
+  }
+
+  async login({ email, password }: LoginCase.Input): Promise<LoginCase.Output> {
+    const doctor = await this.doctorRepository.findOneByEmail(email)
+
+    if (!doctor) {
+      throw new NotFoundError('doctor')
+    }
+
+    if (!(await bcrypt.compare(password, doctor.password))) {
+      throw new WrongPasswordError()
+    }
+
+    const doctorJwt: string = jwt.sign(
+      {
+        id: doctor.id
+      },
+      Environment.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: '30d'
+      }
+    )
+
+    return {
+      ...doctor,
+      jwt: doctorJwt
+    }
   }
 }

@@ -1,9 +1,16 @@
 import { ReminderContracts } from '../../../data/services/reminder'
 import { IsIntegerValidatorPort } from '../../../ports/validators/is-integer'
 import { IsStringValidatorPort } from '../../../ports/validators/is-string'
+import { IsValidTokenValidatorPort } from '../../../ports/validators/is-valid-token'
 import { InvalidParamError } from '../../errors/invalid-param'
 import { MissingParamError } from '../../errors/missing-param'
-import { badRequest, created, serverError } from '../../helpers/http'
+import { UnauthorizedError } from '../../errors/unauthorized'
+import {
+  badRequest,
+  created,
+  serverError,
+  unauthorized
+} from '../../helpers/http'
 import { Controller } from '../../protocols/controller'
 import { HttpRequest, HttpResponse } from '../../protocols/http'
 
@@ -11,13 +18,25 @@ export class CreateReminderController implements Controller {
   constructor(
     private readonly reminderService: ReminderContracts,
     private readonly isStringValidator: IsStringValidatorPort,
-    private readonly isIntegerValidator: IsIntegerValidatorPort
+    private readonly isIntegerValidator: IsIntegerValidatorPort,
+    private readonly isValidTokenValidator: IsValidTokenValidatorPort
   ) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
+      const token = httpRequest.headers?.authorization
+
+      if (!token) {
+        return badRequest(new MissingParamError('authorization token'))
+      }
+
+      const doctorId = this.isValidTokenValidator.validate(token)
+
+      if (!doctorId) {
+        return unauthorized(new UnauthorizedError())
+      }
+
       const requiredFields = [
-        'doctorId',
         'pacientName',
         'pacientPhone',
         'periodType',
@@ -30,13 +49,8 @@ export class CreateReminderController implements Controller {
         }
       }
 
-      const {
-        doctorId,
-        pacientName,
-        pacientPhone,
-        periodType,
-        periodQuantity
-      } = httpRequest.body
+      const { pacientName, pacientPhone, periodType, periodQuantity } =
+        httpRequest.body
 
       if (!this.isStringValidator.validate(doctorId)) {
         return badRequest(new InvalidParamError('doctorId'))

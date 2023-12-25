@@ -1,20 +1,40 @@
 import { ReminderContracts } from '../../../data/services/reminder'
 import { IsStringValidatorPort } from '../../../ports/validators/is-string'
+import { IsValidTokenValidatorPort } from '../../../ports/validators/is-valid-token'
 import { InvalidParamError } from '../../errors/invalid-param'
 import { MissingParamError } from '../../errors/missing-param'
-import { badRequest, noContent, serverError } from '../../helpers/http'
+import { UnauthorizedError } from '../../errors/unauthorized'
+import {
+  badRequest,
+  noContent,
+  serverError,
+  unauthorized
+} from '../../helpers/http'
 import { Controller } from '../../protocols/controller'
 import { HttpRequest, HttpResponse } from '../../protocols/http'
 
 export class DeleteReminderController implements Controller {
   constructor(
     private readonly reminderService: ReminderContracts,
-    private readonly isStringValidator: IsStringValidatorPort
+    private readonly isStringValidator: IsStringValidatorPort,
+    private readonly isValidTokenValidator: IsValidTokenValidatorPort
   ) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ['id', 'doctorId']
+      const token = httpRequest.headers?.authorization
+
+      if (!token) {
+        return badRequest(new MissingParamError('authorization token'))
+      }
+
+      const doctorId = this.isValidTokenValidator.validate(token)
+
+      if (!doctorId) {
+        return unauthorized(new UnauthorizedError())
+      }
+
+      const requiredFields = ['id']
 
       for (const field of requiredFields) {
         if (!httpRequest.body[field]) {
@@ -22,7 +42,7 @@ export class DeleteReminderController implements Controller {
         }
       }
 
-      const { id, doctorId } = httpRequest.body
+      const { id } = httpRequest.body
 
       if (!this.isStringValidator.validate(id)) {
         return badRequest(new InvalidParamError('id'))

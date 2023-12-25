@@ -1,29 +1,40 @@
 import { DoctorContracts } from '../../../data/services/doctor'
 import { IsStringValidatorPort } from '../../../ports/validators/is-string'
+import { IsValidTokenValidatorPort } from '../../../ports/validators/is-valid-token'
 import { InvalidParamError } from '../../errors/invalid-param'
 import { MissingParamError } from '../../errors/missing-param'
 import { NotFoundError } from '../../errors/not-found'
-import { badRequest, notFound, ok, serverError } from '../../helpers/http'
+import { UnauthorizedError } from '../../errors/unauthorized'
+import {
+  badRequest,
+  notFound,
+  ok,
+  serverError,
+  unauthorized
+} from '../../helpers/http'
 import { Controller } from '../../protocols/controller'
 import { HttpRequest, HttpResponse } from '../../protocols/http'
 
 export class GetDoctorController implements Controller {
   constructor(
     private readonly doctorService: DoctorContracts,
-    private readonly isStringValidator: IsStringValidatorPort
+    private readonly isStringValidator: IsStringValidatorPort,
+    private readonly isValidTokenValidator: IsValidTokenValidatorPort
   ) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ['id']
+      const token = httpRequest.headers?.authorization
 
-      for (const field of requiredFields) {
-        if (!httpRequest.body[field]) {
-          return badRequest(new MissingParamError(field))
-        }
+      if (!token) {
+        return badRequest(new MissingParamError('authorization token'))
       }
 
-      const { id } = httpRequest.body
+      const id = this.isValidTokenValidator.validate(token)
+
+      if (!id) {
+        return unauthorized(new UnauthorizedError())
+      }
 
       if (!this.isStringValidator.validate(id)) {
         return badRequest(new InvalidParamError('id'))

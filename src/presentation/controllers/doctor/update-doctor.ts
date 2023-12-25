@@ -2,9 +2,16 @@ import { DoctorContracts } from '../../../data/services/doctor'
 import { IsEmailValidatorPort } from '../../../ports/validators/is-email'
 import { IsIntegerValidatorPort } from '../../../ports/validators/is-integer'
 import { IsStringValidatorPort } from '../../../ports/validators/is-string'
+import { IsValidTokenValidatorPort } from '../../../ports/validators/is-valid-token'
 import { InvalidParamError } from '../../errors/invalid-param'
 import { MissingParamError } from '../../errors/missing-param'
-import { badRequest, noContent, serverError } from '../../helpers/http'
+import { UnauthorizedError } from '../../errors/unauthorized'
+import {
+  badRequest,
+  noContent,
+  serverError,
+  unauthorized
+} from '../../helpers/http'
 import { Controller } from '../../protocols/controller'
 import { HttpRequest, HttpResponse } from '../../protocols/http'
 
@@ -13,20 +20,25 @@ export class UpdateDoctorController implements Controller {
     private readonly doctorService: DoctorContracts,
     private readonly isStringValidator: IsStringValidatorPort,
     private readonly isIntegerValidator: IsIntegerValidatorPort,
-    private readonly isEmailValidator: IsEmailValidatorPort
+    private readonly isEmailValidator: IsEmailValidatorPort,
+    private readonly isValidTokenValidator: IsValidTokenValidatorPort
   ) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ['id']
+      const token = httpRequest.headers?.authorization
 
-      for (const field of requiredFields) {
-        if (!httpRequest.body[field]) {
-          return badRequest(new MissingParamError(field))
-        }
+      if (!token) {
+        return badRequest(new MissingParamError('authorization token'))
       }
 
-      const { id, phone, specialty, email, daysToSchedule, schedulePhone } =
+      const id = this.isValidTokenValidator.validate(token)
+
+      if (!id) {
+        return unauthorized(new UnauthorizedError())
+      }
+
+      const { phone, specialty, email, daysToSchedule, schedulePhone } =
         httpRequest.body
 
       if (!this.isStringValidator.validate(id)) {
