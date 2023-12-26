@@ -7,6 +7,7 @@ import { GenerateIdPort } from '../../ports/crypto/generate-id'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
 import { CreateDoctorCase } from '../../ports/usecases/doctor/create-doctor'
 import { GetDoctorCase } from '../../ports/usecases/doctor/get-doctor'
+import { GetDoctorByEmailCase } from '../../ports/usecases/doctor/get-doctor-by-email'
 import { LoginCase } from '../../ports/usecases/doctor/login'
 import { ResetRemindersCase } from '../../ports/usecases/doctor/reset-reminders'
 import { UpdateDoctorCase } from '../../ports/usecases/doctor/update-doctor'
@@ -17,7 +18,8 @@ export type DoctorContracts = GetDoctorCase.Contract &
   CreateDoctorCase.Contract &
   UpdateDoctorCase.Contract &
   ResetRemindersCase.Contract &
-  LoginCase.Contract
+  LoginCase.Contract &
+  GetDoctorByEmailCase.Contract
 
 export class DoctorService implements DoctorContracts {
   constructor(
@@ -107,5 +109,16 @@ export class DoctorService implements DoctorContracts {
       ...doctor,
       jwt: doctorJwt
     }
+  }
+
+  async findOneByEmail({
+    email
+  }: GetDoctorByEmailCase.Input): Promise<boolean> {
+    const doctor = await this.doctorRepository.findOneByEmail(email)
+
+    if (!doctor) {
+      return false
+    }
+    return true
   }
 }

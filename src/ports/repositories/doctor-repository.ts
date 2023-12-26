@@ -3,10 +3,10 @@ import { UpdateDoctorDto } from './dtos/doctor/update-doctor'
 
 export namespace DoctorRepositoryPort {
   export interface Contracts {
-    findOne(id: string): Promise<Doctor>
+    findOne(id: string): Promise<Doctor | null>
     create(input: Doctor): Promise<void>
     update(input: UpdateDoctorDto): Promise<void>
     resetReminders(): Promise<void>
-    findOneByEmail(email: string): Promise<Doctor>
+    findOneByEmail(email: string): Promise<Doctor | null>
   }
 }

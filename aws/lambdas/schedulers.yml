@@ -1,15 +1,15 @@
-# process-reminders:
-#   handler: ./src/app/lambdas/schedulers/process-reminders.handler
-#   timeout: 90
-#   events:
-#     - schedule: cron(0 11 * * 1-5)
-
 process-reminders:
-   handler: ./src/app/lambdas/schedulers/process-reminders.handler
-   events:
-    - httpApi:
-        path: /reminders-process
-        method: post
+  handler: ./src/app/lambdas/schedulers/process-reminders.handler
+  timeout: 90
+  events:
+    - schedule: cron(0 11 * * ? *)
+
+#process-reminders:
+#   handler: ./src/app/lambdas/schedulers/process-reminders.handler
+#   events:
+#    - httpApi:
+#        path: /reminders-process
+#        method: post
 
 reset-reminders:
   handler: ./src/app/lambdas/schedulers/reset-reminders.handler

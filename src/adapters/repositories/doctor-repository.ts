@@ -5,12 +5,17 @@ import { UpdateDoctorDto } from '../../ports/repositories/dtos/doctor/update-doc
 import { doctorMapper } from './mappers/doctor'
 
 export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
-  async findOne(id: string): Promise<Doctor> {
+  async findOne(id: string): Promise<Doctor | null> {
     const doctor = await DbConnection.getInstace()
       .select('*')
       .from('doctor')
       .where('id', id)
       .first()
+
+    if (!doctor) {
+      return null
+    }
+
     return doctorMapper().toEntity(doctor)
   }
 
@@ -59,12 +64,16 @@ export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
     )
   }
 
-  async findOneByEmail(email: string): Promise<Doctor> {
+  async findOneByEmail(email: string): Promise<Doctor | null> {
     const doctor = await DbConnection.getInstace()
       .select('*')
       .from('doctor')
       .where('email', email)
       .first()
+
+    if (!doctor) {
+      return null
+    }
     return doctorMapper().toEntity(doctor)
   }
 }

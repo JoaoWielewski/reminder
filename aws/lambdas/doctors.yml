@@ -25,3 +25,10 @@ login:
     - httpApi:
         path: /login
         method: post
+
+get-doctor-by-email:
+  handler: ./src/app/lambdas/doctor/get-doctor-by-email.handler
+  events:
+    - httpApi:
+        path: /doctor-email/{email}
+        method: get

@@ -11,6 +11,7 @@ import { ProcessRemindersCase } from '../../ports/usecases/reminder/process-remi
 import { IsBusinessDayValidatorContract } from '../../ports/utils/is-business-day'
 import { PeriodFormatterContract } from '../../ports/utils/period-formatter'
 import { NotBusinessDayError } from '../errors/not-business-day'
+import { NotFoundError } from '../errors/not-found'
 import { OutOfRemindersError } from '../errors/out-of-reminders'
 
 export type ReminderContracts = CreateReminderCase.Contract &
@@ -36,6 +37,11 @@ export class ReminderService implements ReminderContracts {
     periodQuantity
   }: CreateReminderCase.Input): Promise<CreateReminderCase.Output> {
     const doctor = await this.doctorRepository.findOne(doctorId)
+
+    if (!doctor) {
+      throw new NotFoundError('doctor')
+    }
+
     const currentRemainingReminders = doctor.remainingReminders
 
     if (currentRemainingReminders < 1) {
@@ -103,6 +109,11 @@ export class ReminderService implements ReminderContracts {
 
   async delete({ id, doctorId }: DeleteReminderCase.Input): Promise<void> {
     const doctor = await this.doctorRepository.findOne(doctorId)
+
+    if (!doctor) {
+      throw new NotFoundError('doctor')
+    }
+
     const currentRemainingReminders = doctor.remainingReminders
 
     await this.doctorRepository.update({
@@ -126,6 +137,11 @@ export class ReminderService implements ReminderContracts {
 
     for (const reminder of activeReminders) {
       const doctor = await this.doctorRepository.findOne(reminder.doctorId)
+
+      if (!doctor) {
+        throw new NotFoundError('doctor')
+      }
+
       const expectedReturnDateString = reminder.expectedReturnDate
       const expectedReturnDate = new Date(expectedReturnDateString)
       expectedReturnDate.setDate(
