@@ -1,0 +1,6 @@
+create-redirect:
+  handler: ./src/app/lambdas/redirect/create-redirect.handler
+  events:
+    - httpApi:
+        path: /redirect
+        method: post

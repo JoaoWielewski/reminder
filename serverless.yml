@@ -8,10 +8,10 @@ plugins:
 
 useDotenv: true
 
-# custom:
+custom:
   #secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
-  #serverless-offline:
-  #  httpPort: 3001
+  serverless-offline:
+    httpPort: 3001
 
 provider:
   name: aws
@@ -38,6 +38,7 @@ functions:
   - ${file(aws/lambdas/doctors.yml)}
   - ${file(aws/lambdas/reminders.yml)}
   - ${file(aws/lambdas/schedulers.yml)}
+  - ${file(aws/lambdas/redirects.yml)}
   - ${file(aws/sqs-workers/message-worker.yml)}
 
 resources:
