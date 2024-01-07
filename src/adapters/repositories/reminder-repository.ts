@@ -70,6 +70,7 @@ export class ReminderRepositoryAdapter
       .from('reminder')
       .where('doctor_id', doctorId)
       .whereILike('pacient_name', `%${query}%`)
+      .orWhereILike('pacient_phone', `%${query}%`)
       .orderBy('created_at', 'desc')
       .limit(Number(limit))
       .offset((page - 1) * limit)
