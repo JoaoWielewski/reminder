@@ -102,9 +102,11 @@ export class ReminderService implements ReminderContracts {
   }
 
   async findMany({
-    doctorId
+    doctorId,
+    page,
+    limit
   }: GetRemindersCase.Input): Promise<GetRemindersCase.Output> {
-    return await this.reminderRepository.find(doctorId)
+    return await this.reminderRepository.find({ doctorId, page, limit })
   }
 
   async delete({ id, doctorId }: DeleteReminderCase.Input): Promise<void> {

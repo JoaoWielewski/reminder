@@ -1,5 +1,6 @@
 import { ReminderContracts } from '../../../data/services/reminder'
 import { IsArrayEmptyValidatorPort } from '../../../ports/validators/is-array-empty'
+import { IsIntegerValidatorPort } from '../../../ports/validators/is-integer'
 import { IsStringValidatorPort } from '../../../ports/validators/is-string'
 import { IsValidTokenValidatorPort } from '../../../ports/validators/is-valid-token'
 import { InvalidParamError } from '../../errors/invalid-param'
@@ -21,7 +22,8 @@ export class GetRemindersController implements Controller {
     private readonly reminderService: ReminderContracts,
     private readonly isStringValidator: IsStringValidatorPort,
     private readonly isArrayEmptyValidator: IsArrayEmptyValidatorPort,
-    private readonly isValidTokenValidator: IsValidTokenValidatorPort
+    private readonly isValidTokenValidator: IsValidTokenValidatorPort,
+    private readonly isIntegerValidator: IsIntegerValidatorPort
   ) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
@@ -38,11 +40,33 @@ export class GetRemindersController implements Controller {
         return unauthorized(new UnauthorizedError())
       }
 
+      const requiredFields = ['page', 'limit']
+
+      for (const field of requiredFields) {
+        if (!httpRequest.body[field]) {
+          return badRequest(new MissingParamError(field))
+        }
+      }
+
+      const { page, limit } = httpRequest.body
+
       if (!this.isStringValidator.validate(doctorId)) {
         return badRequest(new InvalidParamError('doctorId'))
       }
 
-      const reminders = await this.reminderService.findMany({ doctorId })
+      if (!this.isIntegerValidator.validate(page)) {
+        return badRequest(new InvalidParamError('page'))
+      }
+
+      if (!this.isIntegerValidator.validate(limit)) {
+        return badRequest(new InvalidParamError('limit'))
+      }
+
+      const reminders = await this.reminderService.findMany({
+        doctorId,
+        page,
+        limit
+      })
 
       if (this.isArrayEmptyValidator.validate(reminders))
         return notFound(new NotFoundError('reminders'))

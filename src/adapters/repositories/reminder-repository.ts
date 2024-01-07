@@ -2,6 +2,7 @@ import { REMINDER_STATUS } from '../../domain/entities/enums/status'
 import { Reminder } from '../../domain/entities/reminder'
 import { DbConnection } from '../../infra/db/knex'
 import { DeleteActiveRemindersDto } from '../../ports/repositories/dtos/reminder/delete-active-reminders'
+import { GetRemindersDto } from '../../ports/repositories/dtos/reminder/get-reminders'
 import { ReminderRepositoryPort } from '../../ports/repositories/reminder-repository'
 import { reminderMapper } from './mappers/reminder'
 
@@ -45,11 +46,14 @@ export class ReminderRepositoryAdapter
     return result
   }
 
-  async find(doctorId: string): Promise<Reminder[]> {
+  async find({ doctorId, page, limit }: GetRemindersDto): Promise<Reminder[]> {
     const reminders = await DbConnection.getInstace()
       .select('*')
       .from('reminder')
       .where('doctor_id', doctorId)
+      .orderBy('created_at', 'desc')
+      .limit(Number(limit))
+      .offset((page - 1) * limit)
 
     return reminderMapper().toArrayOfEntities(reminders)
   }
