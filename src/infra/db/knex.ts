@@ -4,7 +4,7 @@ import { Environment } from '../../app/env'
 export class DbConnection {
   static instance: Knex
 
-  static getInstace(): Knex {
+  static getInstance(): Knex {
     if (!this.instance) {
       this.instance = knex({
         client: 'pg',

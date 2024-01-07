@@ -21,7 +21,7 @@ export class ReminderRepositoryAdapter
     status,
     createdAt
   }: Reminder): Promise<void> {
-    await DbConnection.getInstace()('reminder').insert({
+    await DbConnection.getInstance()('reminder').insert({
       id,
       doctor_id: doctorId,
       pacient_name: pacientName,
@@ -38,7 +38,7 @@ export class ReminderRepositoryAdapter
     doctorId,
     pacientPhone
   }: DeleteActiveRemindersDto): Promise<number> {
-    const result = await DbConnection.getInstace()('reminder').delete().where({
+    const result = await DbConnection.getInstance()('reminder').delete().where({
       doctor_id: doctorId,
       pacient_phone: pacientPhone,
       status: REMINDER_STATUS.ACTIVE
@@ -48,7 +48,7 @@ export class ReminderRepositoryAdapter
   }
 
   async find({ doctorId, page, limit }: GetRemindersDto): Promise<Reminder[]> {
-    const reminders = await DbConnection.getInstace()
+    const reminders = await DbConnection.getInstance()
       .select('*')
       .from('reminder')
       .where('doctor_id', doctorId)
@@ -65,7 +65,7 @@ export class ReminderRepositoryAdapter
     limit,
     query
   }: SearchRemindersDto): Promise<Reminder[]> {
-    const reminders = await DbConnection.getInstace()
+    const reminders = await DbConnection.getInstance()
       .select('*')
       .from('reminder')
       .where('doctor_id', doctorId)
@@ -78,11 +78,11 @@ export class ReminderRepositoryAdapter
   }
 
   async delete(id: string): Promise<void> {
-    await DbConnection.getInstace()('reminder').delete().where('id', id)
+    await DbConnection.getInstance()('reminder').delete().where('id', id)
   }
 
   async findActiveReminders(): Promise<Reminder[]> {
-    const reminders = await DbConnection.getInstace()
+    const reminders = await DbConnection.getInstance()
       .select('*')
       .from('reminder')
       .where('status', REMINDER_STATUS.ACTIVE)
@@ -91,8 +91,15 @@ export class ReminderRepositoryAdapter
   }
 
   async setToSent(id: string): Promise<void> {
-    await DbConnection.getInstace()('reminder')
+    await DbConnection.getInstance()('reminder')
       .where('id', id)
       .update({ status: REMINDER_STATUS.MESSAGE_SENT })
+  }
+
+  async count(doctorId: string): Promise<number> {
+    const result = await DbConnection.getInstance()('reminder')
+      .count('id')
+      .where('doctor_id', doctorId)
+    return parseInt(String(result[0].count))
   }
 }

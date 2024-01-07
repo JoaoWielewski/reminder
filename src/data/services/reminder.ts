@@ -4,6 +4,7 @@ import { GenerateIdPort } from '../../ports/crypto/generate-id'
 import { SQSProviderPort } from '../../ports/providers/sqs'
 import { DoctorRepositoryPort } from '../../ports/repositories/doctor-repository'
 import { ReminderRepositoryPort } from '../../ports/repositories/reminder-repository'
+import { CountRemindersCase } from '../../ports/usecases/reminder/count-reminders'
 import { CreateReminderCase } from '../../ports/usecases/reminder/create-reminder'
 import { DeleteReminderCase } from '../../ports/usecases/reminder/delete-reminder'
 import { GetRemindersCase } from '../../ports/usecases/reminder/get-reminders'
@@ -19,7 +20,8 @@ export type ReminderContracts = CreateReminderCase.Contract &
   GetRemindersCase.Contract &
   DeleteReminderCase.Contract &
   ProcessRemindersCase.Contract &
-  SearchRemindersCase.Contract
+  SearchRemindersCase.Contract &
+  CountRemindersCase.Contract
 
 export class ReminderService implements ReminderContracts {
   constructor(
@@ -204,5 +206,11 @@ export class ReminderService implements ReminderContracts {
         )
       }
     }
+  }
+
+  async count({
+    doctorId
+  }: CountRemindersCase.Input): Promise<CountRemindersCase.Output> {
+    return await this.reminderRepository.count(doctorId)
   }
 }

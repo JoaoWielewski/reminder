@@ -12,5 +12,6 @@ export namespace ReminderRepositoryPort {
     findActiveReminders(): Promise<Reminder[]>
     setToSent(id: string): Promise<void>
     search(input: SearchRemindersDto): Promise<Reminder[]>
+    count(doctorId: string): Promise<number>
   }
 }

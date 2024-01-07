@@ -6,7 +6,7 @@ import { doctorMapper } from './mappers/doctor'
 
 export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
   async findOne(id: string): Promise<Doctor | null> {
-    const doctor = await DbConnection.getInstace()
+    const doctor = await DbConnection.getInstance()
       .select('*')
       .from('doctor')
       .where('id', id)
@@ -34,7 +34,7 @@ export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
     password,
     createdAt
   }: Doctor): Promise<void> {
-    await DbConnection.getInstace()('doctor').insert({
+    await DbConnection.getInstance()('doctor').insert({
       id,
       name,
       phone,
@@ -52,20 +52,20 @@ export class DoctorRepositoryAdapter implements DoctorRepositoryPort.Contracts {
   }
 
   async update({ id, ...fieldsToUpdate }: UpdateDoctorDto): Promise<void> {
-    await DbConnection.getInstace()('doctor')
+    await DbConnection.getInstance()('doctor')
       .where('id', id)
       .update({ ...fieldsToUpdate, updated_at: new Date() })
   }
 
   async resetReminders(): Promise<void> {
-    await DbConnection.getInstace()('doctor').update(
+    await DbConnection.getInstance()('doctor').update(
       'remaining_reminders',
-      DbConnection.getInstace().raw('monthly_reminders')
+      DbConnection.getInstance().raw('monthly_reminders')
     )
   }
 
   async findOneByEmail(email: string): Promise<Doctor | null> {
-    const doctor = await DbConnection.getInstace()
+    const doctor = await DbConnection.getInstance()
       .select('*')
       .from('doctor')
       .where('email', email)

@@ -25,3 +25,10 @@ search-reminders:
     - httpApi:
         path: /reminders/search
         method: get
+
+count-reminders:
+  handler: ./src/app/lambdas/reminder/count-reminders.handler
+  events:
+    - httpApi:
+        path: /reminders/count
+        method: get
