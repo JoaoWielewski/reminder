@@ -1,6 +1,7 @@
 import { Reminder } from '../../domain/entities/reminder'
 import { DeleteActiveRemindersDto } from './dtos/reminder/delete-active-reminders'
 import { GetRemindersDto } from './dtos/reminder/get-reminders'
+import { SearchRemindersDto } from './dtos/reminder/search-reminders'
 
 export namespace ReminderRepositoryPort {
   export interface Contracts {
@@ -10,5 +11,6 @@ export namespace ReminderRepositoryPort {
     delete(id: string): Promise<void>
     findActiveReminders(): Promise<Reminder[]>
     setToSent(id: string): Promise<void>
+    search(input: SearchRemindersDto): Promise<Reminder[]>
   }
 }

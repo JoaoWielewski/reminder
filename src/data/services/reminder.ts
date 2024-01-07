@@ -8,6 +8,7 @@ import { CreateReminderCase } from '../../ports/usecases/reminder/create-reminde
 import { DeleteReminderCase } from '../../ports/usecases/reminder/delete-reminder'
 import { GetRemindersCase } from '../../ports/usecases/reminder/get-reminders'
 import { ProcessRemindersCase } from '../../ports/usecases/reminder/process-reminders'
+import { SearchRemindersCase } from '../../ports/usecases/reminder/search-reminders'
 import { IsBusinessDayValidatorContract } from '../../ports/utils/is-business-day'
 import { PeriodFormatterContract } from '../../ports/utils/period-formatter'
 import { NotBusinessDayError } from '../errors/not-business-day'
@@ -17,7 +18,8 @@ import { OutOfRemindersError } from '../errors/out-of-reminders'
 export type ReminderContracts = CreateReminderCase.Contract &
   GetRemindersCase.Contract &
   DeleteReminderCase.Contract &
-  ProcessRemindersCase.Contract
+  ProcessRemindersCase.Contract &
+  SearchRemindersCase.Contract
 
 export class ReminderService implements ReminderContracts {
   constructor(
@@ -107,6 +109,20 @@ export class ReminderService implements ReminderContracts {
     limit
   }: GetRemindersCase.Input): Promise<GetRemindersCase.Output> {
     return await this.reminderRepository.find({ doctorId, page, limit })
+  }
+
+  async search({
+    doctorId,
+    page,
+    limit,
+    query
+  }: SearchRemindersCase.Input): Promise<SearchRemindersCase.Output> {
+    return await this.reminderRepository.search({
+      doctorId,
+      page,
+      limit,
+      query
+    })
   }
 
   async delete({ id, doctorId }: DeleteReminderCase.Input): Promise<void> {

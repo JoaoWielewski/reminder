@@ -18,3 +18,10 @@ delete-reminder:
     - httpApi:
         path: /reminder/{id}
         method: delete
+
+search-reminders:
+  handler: ./src/app/lambdas/reminder/search-reminders.handler
+  events:
+    - httpApi:
+        path: /reminders/search
+        method: get
