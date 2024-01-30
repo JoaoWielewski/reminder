@@ -12,6 +12,7 @@ import { ProcessRemindersCase } from '../../ports/usecases/reminder/process-remi
 import { SearchRemindersCase } from '../../ports/usecases/reminder/search-reminders'
 import { IsBusinessDayValidatorContract } from '../../ports/utils/is-business-day'
 import { PeriodFormatterContract } from '../../ports/utils/period-formatter'
+import { NoneRemindersError } from '../errors/none-reminders'
 import { NotBusinessDayError } from '../errors/not-business-day'
 import { NotFoundError } from '../errors/not-found'
 import { OutOfRemindersError } from '../errors/out-of-reminders'
@@ -47,6 +48,11 @@ export class ReminderService implements ReminderContracts {
     }
 
     const currentRemainingReminders = doctor.remainingReminders
+    const monthlyReminders = doctor.monthlyReminders
+
+    if (currentRemainingReminders < 1 && monthlyReminders === 0) {
+      throw new NoneRemindersError(doctorId)
+    }
 
     if (currentRemainingReminders < 1) {
       throw new OutOfRemindersError(doctorId)

@@ -14,7 +14,8 @@ export class WhatsappService implements MessageSenderContract {
     specialty,
     pacientPhone,
     schedulePhone,
-    pronoun
+    pronoun,
+    reminderId
   }: SendMessageDto): Promise<boolean> {
     const templateName = pronoun === 'M' ? 'lembrete_mkt_m' : 'lembrete_mkt_f'
 
@@ -64,9 +65,9 @@ export class WhatsappService implements MessageSenderContract {
             parameters: [
               {
                 type: 'text',
-                text: `/page/?phone=55${schedulePhone}&name=${encodeURIComponent(
+                text: `src/index.html?phone=55${schedulePhone}&name=${encodeURIComponent(
                   doctorName
-                )}&date=${date}&pronoun=${pronoun}`
+                )}&date=${date}&pronoun=${pronoun}&id=${reminderId}`
               }
             ]
           }

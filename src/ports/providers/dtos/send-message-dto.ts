@@ -8,4 +8,5 @@ export interface SendMessageDto {
   pacientPhone: string
   schedulePhone: string
   pronoun: string
+  reminderId: string
 }
