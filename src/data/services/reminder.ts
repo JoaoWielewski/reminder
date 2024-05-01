@@ -154,9 +154,9 @@ export class ReminderService implements ReminderContracts {
     const currentDate = new Date()
     const isBusinessDay =
       await this.isBusinessDayValidator.validate(currentDate)
-
+    
     if (!isBusinessDay) {
-      throw new NotBusinessDayError()
+     throw new NotBusinessDayError()
     }
 
     const activeReminders = await this.reminderRepository.findActiveReminders()

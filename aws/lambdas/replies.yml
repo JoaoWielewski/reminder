@@ -1,0 +1,6 @@
+process-reply:
+  handler: ./src/app/lambdas/reply/process-reply.handler
+  events:
+    - httpApi:
+        path: /reply
+        method: post
