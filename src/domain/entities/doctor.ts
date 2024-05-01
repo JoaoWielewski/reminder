@@ -5,7 +5,7 @@ export type DoctorDomain = {
   name: string
   phone: string
   specialty: string
-  daysToSchedule: number
+  daysToSchedule?: number
   email: string
   pronoun: PRONOUN
   monthlyReminders: number
@@ -22,7 +22,7 @@ export class Doctor implements DoctorDomain {
   name: string
   phone: string
   specialty: string
-  daysToSchedule: number
+  daysToSchedule?: number
   email: string
   pronoun: PRONOUN
   monthlyReminders: number

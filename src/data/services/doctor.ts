@@ -37,7 +37,6 @@ export class DoctorService implements DoctorContracts {
     specialty,
     email,
     pronoun,
-    daysToSchedule,
     schedulePhone,
     password
   }: CreateDoctorCase.Input): Promise<CreateDoctorCase.Output> {
@@ -48,7 +47,6 @@ export class DoctorService implements DoctorContracts {
       specialty,
       email,
       pronoun: pronoun as PRONOUN,
-      daysToSchedule,
       schedulePhone,
       password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
       isActive: false,

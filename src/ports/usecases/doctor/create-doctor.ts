@@ -7,7 +7,6 @@ export namespace CreateDoctorCase {
     specialty: string
     email: string
     pronoun: string
-    daysToSchedule: number
     schedulePhone: string
     password: string
   }

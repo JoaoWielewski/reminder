@@ -1,6 +1,5 @@
 import { DoctorContracts } from '../../../data/services/doctor'
 import { IsEmailValidatorPort } from '../../../ports/validators/is-email'
-import { IsIntegerValidatorPort } from '../../../ports/validators/is-integer'
 import { IsStringValidatorPort } from '../../../ports/validators/is-string'
 import { IsValidPronounValidatorPort } from '../../../ports/validators/is-valid-pronoun'
 import { InvalidParamError } from '../../errors/invalid-param'
@@ -13,7 +12,6 @@ export class CreateDoctorController implements Controller {
   constructor(
     private readonly doctorService: DoctorContracts,
     private readonly isStringValidator: IsStringValidatorPort,
-    private readonly isIntegerValidator: IsIntegerValidatorPort,
     private readonly isValidPronounValidator: IsValidPronounValidatorPort,
     private readonly isEmailValidator: IsEmailValidatorPort
   ) {}
@@ -26,7 +24,6 @@ export class CreateDoctorController implements Controller {
         'specialty',
         'email',
         'pronoun',
-        'daysToSchedule',
         'schedulePhone',
         'password'
       ]
@@ -43,7 +40,6 @@ export class CreateDoctorController implements Controller {
         specialty,
         email,
         pronoun,
-        daysToSchedule,
         schedulePhone,
         password
       } = httpRequest.body
@@ -68,10 +64,6 @@ export class CreateDoctorController implements Controller {
         return badRequest(new InvalidParamError('schedulePhone'))
       }
 
-      if (!this.isIntegerValidator.validate(daysToSchedule)) {
-        return badRequest(new InvalidParamError('daysToSchedule'))
-      }
-
       if (!this.isValidPronounValidator.validate(pronoun)) {
         return badRequest(new InvalidParamError('pronoun'))
       }
@@ -86,7 +78,6 @@ export class CreateDoctorController implements Controller {
         specialty,
         email,
         pronoun,
-        daysToSchedule,
         schedulePhone,
         password
       })
