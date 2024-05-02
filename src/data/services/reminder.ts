@@ -154,9 +154,9 @@ export class ReminderService implements ReminderContracts {
     const currentDate = new Date()
     const isBusinessDay =
       await this.isBusinessDayValidator.validate(currentDate)
-    
+
     if (!isBusinessDay) {
-     throw new NotBusinessDayError()
+      throw new NotBusinessDayError()
     }
 
     const activeReminders = await this.reminderRepository.findActiveReminders()
@@ -170,9 +170,13 @@ export class ReminderService implements ReminderContracts {
 
       const expectedReturnDateString = reminder.expectedReturnDate
       const expectedReturnDate = new Date(expectedReturnDateString)
-      expectedReturnDate.setDate(
-        expectedReturnDate.getDate() - doctor.daysToSchedule
-      )
+      if (doctor.daysToSchedule) {
+        expectedReturnDate.setDate(
+          expectedReturnDate.getDate() - doctor.daysToSchedule
+        )
+      } else {
+        expectedReturnDate.setDate(expectedReturnDate.getDate() - 1)
+      }
 
       if (currentDate > expectedReturnDate) {
         const expectedReturnDate = new Date(expectedReturnDateString)

@@ -3,7 +3,7 @@ export interface SendMessageDto {
   doctorName: string
   period: string
   date: string
-  daysToSchedule: number
+  daysToSchedule?: number
   specialty: string
   pacientPhone: string
   schedulePhone: string

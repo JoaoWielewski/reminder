@@ -17,68 +17,129 @@ export class WhatsappService implements MessageSenderContract {
     pronoun,
     reminderId
   }: SendMessageDto): Promise<boolean> {
-    const templateName = pronoun === 'M' ? 'lembrete_mkt_m' : 'lembrete_mkt_f'
+    const baseTemplateName = daysToSchedule ? 'lembrete_mkt' : 'lembrete'
+    const templateName = baseTemplateName + (pronoun === 'M' ? '_m' : '_f')
 
-    const response = await this.whatsappProvider.post('/messages', {
-      messaging_product: 'whatsapp',
-      to: '55' + pacientPhone,
-      type: 'template',
-      template: {
-        name: templateName,
-        language: {
-          code: 'pt_BR'
-        },
-        components: [
-          {
-            type: 'body',
-            parameters: [
-              {
-                type: 'text',
-                text: pacientName
-              },
-              {
-                type: 'text',
-                text: doctorName
-              },
-              {
-                type: 'text',
-                text: period
-              },
-              {
-                type: 'text',
-                text: date
-              },
-              {
-                type: 'text',
-                text: daysToSchedule.toString()
-              },
-              {
-                type: 'text',
-                text: specialty
-              }
-            ]
+    if (daysToSchedule) {
+      const response = await this.whatsappProvider.post('/messages', {
+        messaging_product: 'whatsapp',
+        to: '55' + pacientPhone,
+        type: 'template',
+        template: {
+          name: templateName,
+          language: {
+            code: 'pt_BR'
           },
-          {
-            type: 'button',
-            sub_type: 'url',
-            index: '0',
-            parameters: [
-              {
-                type: 'text',
-                text: `src/index.html?phone=55${schedulePhone}&name=${encodeURIComponent(
-                  doctorName
-                )}&date=${date}&pronoun=${pronoun}&id=${reminderId}`
-              }
-            ]
-          }
-        ]
+          components: [
+            {
+              type: 'body',
+              parameters: [
+                {
+                  type: 'text',
+                  text: pacientName
+                },
+                {
+                  type: 'text',
+                  text: doctorName
+                },
+                {
+                  type: 'text',
+                  text: period
+                },
+                {
+                  type: 'text',
+                  text: date
+                },
+                {
+                  type: 'text',
+                  text: daysToSchedule.toString()
+                },
+                {
+                  type: 'text',
+                  text: specialty
+                }
+              ]
+            },
+            {
+              type: 'button',
+              sub_type: 'url',
+              index: '0',
+              parameters: [
+                {
+                  type: 'text',
+                  text: `src/index.html?phone=55${schedulePhone}&name=${encodeURIComponent(
+                    doctorName
+                  )}&date=${date}&pronoun=${pronoun}&id=${reminderId}`
+                }
+              ]
+            }
+          ]
+        }
+      })
+
+      if (response.data.messages[0].message_status === 'accepted') {
+        return true
       }
-    })
 
-    if (response.data.messages[0].message_status === 'accepted') {
-      return true
+      return false
+    } else {
+      const response = await this.whatsappProvider.post('/messages', {
+        messaging_product: 'whatsapp',
+        to: '55' + pacientPhone,
+        type: 'template',
+        template: {
+          name: templateName,
+          language: {
+            code: 'pt_BR'
+          },
+          components: [
+            {
+              type: 'body',
+              parameters: [
+                {
+                  type: 'text',
+                  text: pacientName
+                },
+                {
+                  type: 'text',
+                  text: doctorName
+                },
+                {
+                  type: 'text',
+                  text: period
+                },
+                {
+                  type: 'text',
+                  text: date
+                },
+                {
+                  type: 'text',
+                  text: specialty
+                }
+              ]
+            },
+            {
+              type: 'button',
+              sub_type: 'url',
+              index: '0',
+              parameters: [
+                {
+                  type: 'text',
+                  text: `src/index.html?phone=55${schedulePhone}&name=${encodeURIComponent(
+                    doctorName
+                  )}&date=${date}&pronoun=${pronoun}&id=${reminderId}`
+                }
+              ]
+            }
+          ]
+        }
+      })
+
+      if (response.data.messages[0].message_status === 'accepted') {
+        return true
+      }
+
+      return false
     }
-
-    return false
   }
 }

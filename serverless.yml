@@ -9,9 +9,9 @@ plugins:
 useDotenv: true
 
 custom:
-  secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
-  #serverless-offline:
-  #  httpPort: 3001
+  #secrets: ${ssm:/aws/reference/secretsmanager/prod/api}
+  serverless-offline:
+    httpPort: 3001
 
 provider:
   name: aws
