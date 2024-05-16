@@ -69,7 +69,7 @@ export class WhatsappService implements MessageSenderContract {
                   type: 'text',
                   text: `src/index.html?phone=55${schedulePhone}&name=${encodeURIComponent(
                     doctorName
-                  )}&date=${date}&pronoun=${pronoun}&id=${reminderId}`
+                  )}&date=${date}&pronoun=${pronoun}&id=${reminderId}&early=true`
                 }
               ]
             }
@@ -127,7 +127,7 @@ export class WhatsappService implements MessageSenderContract {
                   type: 'text',
                   text: `src/index.html?phone=55${schedulePhone}&name=${encodeURIComponent(
                     doctorName
-                  )}&date=${date}&pronoun=${pronoun}&id=${reminderId}`
+                  )}&date=${date}&pronoun=${pronoun}&id=${reminderId}&early=false`
                 }
               ]
             }
