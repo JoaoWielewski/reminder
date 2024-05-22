@@ -175,7 +175,7 @@ export class ReminderService implements ReminderContracts {
           expectedReturnDate.getDate() - doctor.daysToSchedule
         )
       } else {
-        expectedReturnDate.setDate(expectedReturnDate.getDate() - 1)
+        expectedReturnDate.setDate(expectedReturnDate.getDate())
       }
 
       if (currentDate > expectedReturnDate) {
